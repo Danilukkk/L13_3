@@ -35,7 +35,7 @@ public class ApiTest {
     }
 
     @Test
-    @DisplayName("Создаем нового пользователя")
+    @DisplayName("Создаем нового пользователя, проверяем соответствие id и код ответа")
     public void addNewUser() {
         Integer id = 78094;
         String username = "Danilukkk";
