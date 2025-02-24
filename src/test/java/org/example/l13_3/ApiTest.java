@@ -1,6 +1,7 @@
 package org.example.l13_3;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,38 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ApiTest {
-    private final int nullPet = 1567898;
+    private static final Integer nullPet = 1567898;
 
 
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "https://petstore.swagger.io/v2";
     }
+
+    @BeforeAll
+    public static void del() {
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+
+        Integer petId = nullPet;
+
+        int statusCode = given()
+                .header("api_key", "special-key")
+                .when()
+                .delete("/pet/{petId}", petId)
+                .then()
+                .log().all()
+                .extract()
+                .statusCode();
+
+        if (statusCode == 404) {
+            System.out.println("Питомец уже отсутствует в базе, DELETE не требуется.");
+        } else if (statusCode == 200) {
+            System.out.println("Питомец успешно удален.");
+        } else {
+            System.out.println("Неожиданный статус ответа: " + statusCode);
+        }
+    }
+
 
     @Test
     @DisplayName("Get запрос отвечает ошибкой 404 при отсутствии питомца")
@@ -32,6 +58,29 @@ public class ApiTest {
                 .statusLine("HTTP/1.1 404 Not Found")
                 .body("type", equalTo("error"))
                 .body("message", equalTo("Pet not found"));
+    }
+
+    @Test
+    @DisplayName("Добавление нового питомца")
+    public void newPetTest(){
+        Integer id = nullPet;
+        String name = "dogg";
+        String status = "sold";
+
+        Map<String, String> req = new HashMap<>();
+        req.put("id", id.toString());
+        req.put("name", name);
+        req.put("status", status);
+
+        given().contentType("application/json")
+                .body(req)
+                .when()
+                .post(baseURI + "/pet")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(200)
+                .body("id", equalTo(id), "name", equalTo(name), "status", equalTo(status));
     }
 
     @Test
