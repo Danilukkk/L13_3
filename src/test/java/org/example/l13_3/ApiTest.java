@@ -46,7 +46,6 @@ public class ApiTest {
         }
     }
 
-
     @Test
     @DisplayName("Get запрос отвечает ошибкой 404 при отсутствии питомца")
     public void search() {
