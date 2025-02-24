@@ -56,13 +56,12 @@ public class ApiTest {
                 .statusCode(404)
                 .log().all()
                 .statusLine("HTTP/1.1 404 Not Found")
-                .body("type", equalTo("error"))
-                .body("message", equalTo("Pet not found"));
+                .body("message", equalTo("Pet not found"), "type", equalTo("error"));
     }
 
     @Test
     @DisplayName("Добавление нового питомца")
-    public void newPetTest(){
+    public void newPetTest() {
         Integer id = nullPet;
         String name = "dogg";
         String status = "sold";
